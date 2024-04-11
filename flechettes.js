@@ -87,10 +87,11 @@ Planet.prototype.isOut = function()
 	return out;
 };
 
-g_aPlanet = new Array();
-g_handlerTimeout = 0;
-g_timeLastMove = 0;
-g_delay = 40;
+let g_aPlanet = new Array();
+let g_handlerTimeout = 0;
+let g_timeLastMove = 0;
+const g_delay = 40;
+let dart;
 
 function findPos(obj) {
 	var curleft = curtop = 0;
@@ -112,7 +113,6 @@ function start()
     g_nLeftDiv = g_posDiv[0];
     g_nTopDiv = g_posDiv[1];
     
-    g_round = new Round();
     
     restart();
     
@@ -132,10 +132,19 @@ function removeAll(cell){
 
 function restart(){
     removeAll(g_Div);
-    createPlanet( g_nLeftDiv + g_nWidthDiv * 0.25, g_nTopDiv + g_nHeightDiv * 0.5, 0, 0.04); 
-    createPlanet( g_nLeftDiv + g_nWidthDiv * 0.75, g_nTopDiv + g_nHeightDiv * 0.5, 0, -0.04); 
-    createPlanet( g_nLeftDiv + g_nWidthDiv * 0.5, g_nTopDiv, 0, 0.04); 
-
+    const v = 0.03; //0.04
+    createPlanet( g_nLeftDiv + g_nWidthDiv * 0.5, g_nTopDiv + g_nHeightDiv * 0.25, v, 0); 
+    createPlanet( g_nLeftDiv + g_nWidthDiv * 0.5, g_nTopDiv + g_nHeightDiv * 0.75, -v, 0); 
+//    createPlanet( g_nLeftDiv, g_nTopDiv  + g_nHeightDiv * 0.5, 0.04, 0);
+    const xDart = g_nLeftDiv;
+    const yDart = g_nTopDiv  + g_nHeightDiv * 0.5;
+    const dartDiv = createLittleDiv(xDart, yDart);
+    dartDiv.style.background = 'rgb(255, 0, 0)'
+    dart = new Planet(xDart, yDart, dartDiv);
+    //[dart.speed_x,  dart.speed_y] =  randomDir().map(x_i => x_i * 0.04);
+    dart.speed_x = v;
+    dart.speed_y = 0;
+    g_Div.appendChild(dartDiv);
 }
 
 function createPlanet(x, y, speedX, speedY) {
@@ -240,3 +249,9 @@ function update()
 
 }
 
+function addDart(evt) {
+    g_aPlanet.push(dart);
+    document.removeEventListener('keypress', addDart);
+}
+
+document.addEventListener('keypress', addDart);
